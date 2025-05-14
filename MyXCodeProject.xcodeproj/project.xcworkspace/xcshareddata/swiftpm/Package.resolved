@@ -1,0 +1,15 @@
+{
+  "originHash" : "9b774f8f0feccec52d12cbd46985e6ef28e9b44047ca386a50f236326e0055c3",
+  "pins" : [
+    {
+      "identity" : "playsdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/CreateWithPlayApp/PlaySDK.git",
+      "state" : {
+        "revision" : "71cc887e66ce46ff977ff3908d2103a4fd087dbe",
+        "version" : "0.3.0-beta"
+      }
+    }
+  ],
+  "version" : 3
+}
