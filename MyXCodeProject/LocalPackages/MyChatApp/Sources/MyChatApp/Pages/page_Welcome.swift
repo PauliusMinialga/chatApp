@@ -2,6 +2,7 @@ import Foundation
 import PlaySDK
 import SwiftUI
 import UIKit
+import ClerkSDK
 
 extension UIK.Pages {
     public class Welcome: UIKitBaseViewController<Welcome.AvailProps, Welcome> {
@@ -59,12 +60,7 @@ extension UIK.Pages.Welcome {
 extension SUI.Pages {
     public struct Welcome: View {
         @State private var isShowingChatList = false
-        
-        // Define colors directly to avoid namespace issues
-        private let primaryBlue = Color(hex: "0084FF")
-        private let backgroundColor = Color.white
-        private let primaryText = Color.black.opacity(0.87)
-        private let invertedText = Color.white
+        @State private var showSignInError = false
         
         public init() { }
         
@@ -72,7 +68,7 @@ extension SUI.Pages {
             NavigationView {
                 ZStack {
                     // Background
-                    backgroundColor.ignoresSafeArea()
+                    Colors.SwiftUI.backgroundColor.ignoresSafeArea()
                     
                     // Content
                     VStack(spacing: 32) {
@@ -85,29 +81,34 @@ extension SUI.Pages {
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 100, height: 100)
-                                .foregroundColor(primaryBlue)
+                                .foregroundColor(Colors.SwiftUI.primaryBlue)
                             
                             Text("Chat App")
                                 .font(.system(size: 28, weight: .semibold))
-                                .foregroundColor(primaryText)
+                                .foregroundColor(Colors.SwiftUI.primaryText)
                         }
                         .padding(.bottom, 40)
                         
                         // Sign in button
                         VStack(spacing: 16) {
                             Button(action: {
-                                // This would be replaced with Clerk authentication
-                                isShowingChatList = true
+                                Clerk.shared.presentSignIn { success in
+                                    if success {
+                                        isShowingChatList = true
+                                    } else {
+                                        showSignInError = true
+                                    }
+                                }
                             }) {
                                 HStack {
                                     Spacer()
                                     Text("Sign in with Clerk")
                                         .font(.system(size: 17, weight: .semibold))
-                                        .foregroundColor(invertedText)
+                                    .foregroundColor(Colors.SwiftUI.invertedText)
                                     Spacer()
                                 }
                                 .frame(height: 52)
-                                .background(primaryBlue)
+                                  .background(Colors.SwiftUI.primaryBlue)
                                 .cornerRadius(12)
                             }
                             .padding(.horizontal, 24)
@@ -119,7 +120,7 @@ extension SUI.Pages {
                             }) {
                                 Text("Continue as Guest")
                                     .font(.system(size: 16))
-                                    .foregroundColor(primaryBlue)
+                                    .foregroundColor(Colors.SwiftUI.primaryBlue)
                             }
                             .padding()
                             .frame(height: 44) // Apple's minimum touch target size
@@ -136,38 +137,10 @@ extension SUI.Pages {
             .navigationViewStyle(StackNavigationViewStyle())
             .fullScreenCover(isPresented: $isShowingChatList) {
                 // Navigate to the chat list screen
-                ChatListPlaceholder()
+                Pages.ChatList()
             }
-        }
-    }
-    
-    // Temporary placeholder until ChatList is properly defined
-    private struct ChatListPlaceholder: View {
-        var body: some View {
-            NavigationView {
-                ZStack {
-                    Color.white.ignoresSafeArea()
-                    
-                    VStack(spacing: 20) {
-                        Text("Chat List")
-                            .font(.title)
-                            .padding()
-                        
-                        Text("This is a placeholder for the chat list screen")
-                            .multilineTextAlignment(.center)
-                            .padding()
-                        
-                        Button("Close") {
-                            // In a real implementation, we would handle navigation properly
-                        }
-                        .padding()
-                        .background(Color(hex: "0084FF"))
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
-                    }
-                    .padding()
-                }
-                .navigationBarTitle("Chats", displayMode: .inline)
+            .alert("Sign in failed", isPresented: $showSignInError) {
+                Button("OK", role: .cancel) { }
             }
         }
     }

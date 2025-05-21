@@ -16,12 +16,14 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/CreateWithPlayApp/PlaySDK.git", exact: "0.3.0-beta"),
+        .package(url: "https://github.com/clerkinc/clerk-sdk-ios.git", from: "1.0.0"),
     ],
     targets: [
         .target(
             name: "MyChatApp",
             dependencies: [
                 .product(name: "PlaySDK", package: "PlaySDK"),
+                .product(name: "ClerkSDK", package: "clerk-sdk-ios"),
                 ],
             resources: [.copy("project.json")]
         ),
